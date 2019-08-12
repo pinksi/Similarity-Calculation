@@ -61,14 +61,6 @@ def get_data():
     print('Data preprocessing completed!')
     return data_frame
 
-# Function to calculate cosine similarity
-def cosine_similarity(vector1, vector2):
-    dot_product = sum(p*q for p,q in zip(vector1, vector2))
-    magnitude = math.sqrt(sum([val**2 for val in vector1])) * math.sqrt(sum([val**2 for val in vector2]))
-    if not magnitude:
-        return 0
-    return dot_product/magnitude
-
 # Function to calculate soft cosine similarity
 def calculate_softcosine_w2v(test_data):
     data = [i.split() for i in (test_data.text).tolist()]
@@ -94,9 +86,9 @@ def calculate_cosine_tfidf(test_data):
 
     cosine_tfidf_matrix = np.zeros(shape=(len(test_data), len(test_data)))
 
-    for index, array in enumerate(tfidf_vectors.toarray()):
-        for index1, array1 in enumerate(tfidf_vectors.toarray()):
-            cosine_tfidf_matrix[index, index1] = cosine_similarity(array, array1)
+    for d1 in range(tfidf_vectors.shape[0]):
+        for d2 in range(tfidf_vectors.shape[0]):
+            cosine_tfidf_matrix[d1, d2] = sklearn.metrics.pairwise.cosine_similarity(tfidf_vectors[d1], tfidf_vectors[d2])
 
     doc_sim_max_index, doc_sim_max_values = calculate_max_similarity(cosine_tfidf_matrix)
     cosine_tfidf_df = export_result(test_data, doc_sim_max_index, doc_sim_max_values, 'cosine_tfidf')
